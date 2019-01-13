@@ -34,6 +34,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     // then DispatcherServlet fait appel a l'api rest de l'application
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        //Autoriser les requete GET POST PUT DELETE et PATCH
+        response.addHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH");
+        // CORS
         response.addHeader("Access-Control-Allow-Origin", "*");
         // j'autorise au navigateur de m'envoyer des requete qui contient ces entetes.
         response.addHeader("Access-Control-Allow-Headers", "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, authorization");
