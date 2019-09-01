@@ -5,23 +5,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUser {
+public class ModuleFeature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String username;
-    private String password;
-    private boolean Actived;
+    private String moduleFeatureName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Collection<AppRole> roles = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private AppRole role;
 
 
 }

@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -18,4 +17,7 @@ public class AppRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String roleName;
+
+    @OneToMany(mappedBy = "role")
+    private Collection<ModuleFeature> moduleFeatures = new ArrayList<>();
 }
