@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // pour perso
         // CSRF attacks specifically target state-changing requests, not theft of data, since the attacker has no way to see the response to the forged request.
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Authentification de type STATELESS (pas de session)
         http.authorizeRequests().antMatchers("/login/**", "/register/**").permitAll();
-        http.authorizeRequests().antMatchers("/appUsers/**", "/appRoles/**").hasAuthority("ADMIN");
+        http.authorizeRequests().antMatchers("/appUsers/**", "/appRoles/**", "/moduleFeatures/**").hasAuthority("ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         // on crée un Filter basé sur JWT (c lui qui genere le token quand user s'authentifier)
         http.addFilter(new JWTAuthenticationFilter(authenticationManager()));

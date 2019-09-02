@@ -1,5 +1,6 @@
 package org.sid.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +15,14 @@ public class ModuleFeature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String moduleFeatureName;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    private String module;
+
+    private String feature;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id")
+    @JsonIgnore
     private AppRole role;
 
 

@@ -4,11 +4,13 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sid.Entities.AppUser;
+import org.sid.Entities.CustomUserDetails;
+import org.sid.Service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -24,6 +26,10 @@ import java.util.List;
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AccountService accountService;
+
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -57,19 +63,39 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // RSA need 2 key private and public
     // HMAC need only private key pour calculer la signature
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        User springUser = (User) authResult.getPrincipal();
+//        User springUser = (User) authResult.getPrincipal();
+        CustomUserDetails springUser = (CustomUserDetails) authResult.getPrincipal();
         //"authResult" c'est l'objet authentifier,
         // getPrincipal() pour avoir User
         // getAuthorities() pour avoir Roles
         List<String> roles = new ArrayList<>();
-        springUser.getAuthorities().forEach(authority -> {
-            roles.add(authority.getAuthority());
+        List<String> modules = new ArrayList<>();
+        List<String> features = new ArrayList<>();
 
+        /*springUser.getAuthorities().forEach(authority -> {
+            System.out.println(authority);
+            roles.add(authority.getAuthority());
+        });*/
+        springUser.getRoles().forEach(role -> {
+            roles.add(role.getAuthority());
         });
+        springUser.getModules().forEach(module -> {
+            modules.add(module.getAuthority());
+        });
+        springUser.getFeatures().forEach(feature -> {
+            features.add(feature.getAuthority());
+        });
+
+        System.out.println(roles);
+        System.out.println(modules);
+        System.out.println(features);
+
         String myJwtToken = JWT.create()
                 .withIssuer(request.getRequestURI())
                 .withSubject(springUser.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[roles.size()])) /* Claim Personalisé je peux mettre ce que je veux */
+                .withArrayClaim("modules", modules.toArray(new String[modules.size()])) /* Claim Personalisé je peux mettre ce que je veux */
+                .withArrayClaim("features", features.toArray(new String[features.size()])) /* Claim Personalisé je peux mettre ce que je veux */
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityParams.JWT_EXPIRATION)) /* 10 day */
                 // je calcule la signature pour garantir que personne d'autre n'est capable de generer le token valid
                 .sign(Algorithm.HMAC256(SecurityParams.PRIVATE_SECRET));
